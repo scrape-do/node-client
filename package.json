@@ -3,7 +3,24 @@
   "version": "1.0.0",
   "main": "dist/lib.js",
   "types": "src/lib.d.ts",
-  "repository": "https://github.com/scrapedo/do",
+  "description": "Scrape.do Node.js API client",
+  "keywords": [
+    "scrape",
+    "do",
+    "scraping",
+    "api",
+    "client",
+    "node",
+    "typescript",
+    "scrape.do",
+    "scrape-do",
+    "http",
+    "scrape.do api"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/scrape-do/node-do.git"
+  },
   "scripts": {
     "dev": "npx ts-node src/lib.ts",
     "build": "tsc",

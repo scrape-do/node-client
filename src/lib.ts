@@ -186,7 +186,7 @@ export class ScrapeDo {
    *
    * @see https://scrape.do/documentation/
    */
-  async doRequest(method: string, options: DoRequest, body?: any, validateStatus?: (status: number) => boolean) {
+  async sendRequest(method: string, options: DoRequest, body?: any, validateStatus?: (status: number) => boolean) {
     if (!validateStatus) {
       validateStatus = (status) => true;
     }

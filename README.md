@@ -4,7 +4,7 @@
 
 ## How to install?
 
-```shell
+```console
 npm install @scrape-do/client
 # or get it from github
 npm install git://git@github.com/scrape-do/node-client
@@ -14,7 +14,7 @@ npm install git://git@github.com/scrape-do/node-client
 
 #### If you want to contribute to the library or include your own customisations, you can recompile the library in this way.
 
-```shell
+```console
 git clone https://github.com/scrape-do/node-client
 npm i
 # build with

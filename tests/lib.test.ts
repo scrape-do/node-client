@@ -9,7 +9,7 @@ describe("Usability tests", () => {
     const response = await client.doRequest("GET", {
       url: "https://httpbin.co/anything",
       extraHeaders: {
-        "sd-A123": "Extra Header",
+        A123: "Extra Header",
       },
     });
 

@@ -1,21 +1,22 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { PlayWithBrowser } from "./playwithbrowser";
+import { GeoCode } from "./geocode";
 
 export const API_URL = "https://api.scrape.do";
 
 /**
  * Proxy options for the request
  * @property {boolean} [super] - Use super proxy
- * @property {string} [geoCode] - Geographical code
- * @property {string} [regionalGeoCode] - Regional geographical code
+ * @property {GeoCode} [geoCode] - Geographical code
+ * @property {"europe" | "asia" | "africa" | "oceania" | "northamerica" | "southamerica"} [regionalGeoCode] - Regional geographical code
  * @property {string} [sessionId] - Session ID for the proxy
  *
  * @see https://scrape.do/documentation/
  */
 type ProxyOptions = {
   super?: boolean;
-  geoCode?: string;
-  regionalGeoCode?: string;
+  geoCode?: GeoCode;
+  regionalGeoCode?: "europe" | "asia" | "africa" | "oceania" | "northamerica" | "southamerica";
   sessionId?: string;
 };
 
@@ -63,8 +64,8 @@ type RenderOptions = {
  * @property {number} [timeout] - Timeout for the request
  * @property {number} [retryTimeout] - Retry timeout for the request
  * @property {boolean} [disableRetry] - Disable retry
- * @property {string} [device] - Device for the request
- * @property {string} [output] - Output format
+ * @property {"Desktop" | "Mobile"} [device] - Device for the request
+ * @property {"raw" | "markdown"} [output] - Output format
  * @property {boolean} [transparentResponse] - Get transparent response
  * @property {ProxyOptions} [super] - Proxy options
  * @property {RenderOptions} [render] - Render options
@@ -82,8 +83,8 @@ export type DoRequest = {
   timeout?: number;
   retryTimeout?: number;
   disableRetry?: boolean;
-  device?: string;
-  output?: string;
+  device?: "Desktop" | "Mobile";
+  output?: "raw" | "markdown";
   transparentResponse?: boolean;
 } & ProxyOptions &
   RenderOptions;
@@ -205,10 +206,13 @@ export class ScrapeDo {
     }
 
     if (options.extraHeaders) {
-      headers = {
-        ...headers,
-        ...options.extraHeaders,
-      };
+      for (let key in options.extraHeaders) {
+        if (key.startsWith("sd-")) {
+          headers[key] = options.extraHeaders[key];
+        } else {
+          headers[`sd-${key}`] = options.extraHeaders[key];
+        }
+      }
     }
 
     if (options.forwardHeaders) {

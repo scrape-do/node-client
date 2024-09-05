@@ -1,13 +1,13 @@
-# node-do
+# @scrape-do/client
 
 #### Scrape.do's official http client for node.js
 
 ## How to install?
 
 ```shell
-npm install @scrape-do/do
+npm install @scrape-do/client
 # or get it from github
-npm install git://git@github.com/scrape-do/node-do
+npm install git://git@github.com/scrape-do/node-client
 ```
 
 ## How to build from scratch
@@ -15,7 +15,7 @@ npm install git://git@github.com/scrape-do/node-do
 #### If you want to contribute to the library or include your own customisations, you can recompile the library in this way.
 
 ```shell
-git clone https://github.com/scrape-do/node-do
+git clone https://github.com/scrape-do/node-client
 npm i
 # build with
 npm build
@@ -27,10 +27,10 @@ npm build
 
 ```typescript
 const client = new ScrapeDo("example_token");
-const response = await client.doRequest("GET", {
+const response = await client.sendRequest("GET", {
   url: "https://httpbin.co/anything",
   extraHeaders: {
-    "sd-A123": "Extra Header",
+    A123: "Extra Header",
   },
 });
 
@@ -39,9 +39,9 @@ console.log(response.data);
 
 ## More details
 
-#### [Documentation for more information](https://scrape.do/documentation/?utm_source=github&utm_medium=node-do)
+#### [Documentation for more information](https://scrape.do/documentation/?utm_source=github&utm_medium=node-client)
 
-#### [Scrape.do](https://scrape.do?utm_source=github&utm_medium=node-do)
+#### [Scrape.do](https://scrape.do?utm_source=github&utm_medium=node-client)
 
 ## License
 

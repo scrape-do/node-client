@@ -4,21 +4,21 @@
 
 ## How to install?
 
-```console
-npm install @scrape-do/client
+```bash
+> npm install @scrape-do/client
 # or get it from github
-npm install git://git@github.com/scrape-do/node-client
+> npm install git://git@github.com/scrape-do/node-client
 ```
 
 ## How to build from scratch
 
 #### If you want to contribute to the library or include your own customisations, you can recompile the library in this way.
 
-```console
-git clone https://github.com/scrape-do/node-client
-npm i
+```bash
+> git clone https://github.com/scrape-do/node-client
+> npm i
 # build with
-npm build
+> npm build
 ```
 
 ## Example Usages

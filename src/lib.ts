@@ -242,7 +242,7 @@ export class ScrapeDo {
       extraHeaders: options.extraHeaders ? true : undefined,
       forwardHeaders: options.forwardHeaders ? true : undefined,
       customHeaders: options.customHeaders ? true : undefined,
-      setCookies: cookies,
+      setCookies: encodeURIComponent(cookies || ""),
       playWithBrowser: pwbParsed,
     };
 

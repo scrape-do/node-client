@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 import { PlayWithBrowser } from "./playwithbrowser";
 import { GeoCode } from "./geocode";
 
@@ -100,15 +100,15 @@ export type DoRequest = {
  * @see https://scrape.do/documentation/
  */
 export type DoErrorResponse = {
-  URL: string;
-  StatusCode: number;
-  Message?: string[];
-  PossibleCauses?: string[];
-  Contact?: string;
-};
+  url: string;
+  statusCode: number;
+  message?: string[];
+  possibleCauses?: string[];
+  contact?: string;
+} & DoHeaders;
 
 /**
- * Response of a successful render request with returnJSON set to true
+ * Response of a successful request
  * @property {any[]} [networkRequests] - List of network requests
  * @property {any[]} [websocketResponses] - List of websocket responses
  * @property {any[]} [actionResults] - List of action results
@@ -117,17 +117,39 @@ export type DoErrorResponse = {
  * @property {string} screenShots.type - Type of screenshot
  * @property {string} screenShots.image - Base64 encoded image
  * @property {string} screenShots.error - Error message
- *
+ * @property {number} statusCode - Status code of the response
+ * @property {string} [cookies] - Cookies
+ * @property {string} [remainingCredits] - Remaining credits
+ * @property {string} [requestCost] - Request cost
+ * @property {string} [resolvedURL] - Resolved URL
+ * @property {string} [targetURL] - Target URL
+ * @property {string} [initialStatusCode] - Initial status code
+ * @property {string} [targetRedirectedLocation] - Target redirected location
+
  * @see https://scrape.do/documentation/
  */
-export type DoRenderJsonResponse = {
+export type DoResponse = {
+  content: string;
+  statusCode: number;
+} & DoHeaders &
+  DoRenderResponse;
+
+export interface DoHeaders {
+  cookies?: string;
+  remainingCredits?: string;
+  requestCost?: string;
+  resolvedURL?: string;
+  targetURL?: string;
+  initialStatusCode?: string;
+  targetRedirectedLocation?: string;
+}
+
+export interface DoRenderResponse {
   networkRequests?: any[];
   websocketResponses?: any[];
   actionResults?: any[];
-  content: string;
   screenShots?: { type: string; image; string; error: string }[];
-};
-
+}
 /**
  * Response of a statistics request
  * @property {boolean} IsActive - Subscription status
@@ -138,13 +160,13 @@ export type DoRenderJsonResponse = {
  *
  * @see https://scrape.do/documentation/
  */
-export type StatisticsResponse = {
+export interface StatisticsResponse {
   IsActive: boolean;
   ConcurrentRequest: number;
   MaxMonthlyRequest: number;
   RemainingConcurrentRequest: number;
   RemainingMonthlyRequest: number;
-};
+}
 
 /**
  * Request client for scrape.do API
@@ -186,10 +208,7 @@ export class ScrapeDo {
    *
    * @see https://scrape.do/documentation/
    */
-  async sendRequest(method: string, options: DoRequest, body?: any, validateStatus?: (status: number) => boolean) {
-    if (!validateStatus) {
-      validateStatus = (status) => true;
-    }
+  async sendRequest(method: string, options: DoRequest, body?: any): Promise<DoResponse | DoErrorResponse> {
     let headers: Record<string, string> = {};
     let cookies: string | undefined;
     let pwbParsed: string | undefined;
@@ -246,14 +265,62 @@ export class ScrapeDo {
       playWithBrowser: pwbParsed,
     };
 
-    return this.reqClient.request({
-      method: method,
-      url: "/",
-      headers: headers,
-      data: body,
-      params: params,
-      validateStatus,
-    });
+    return this.reqClient
+      .request({
+        method: method,
+        url: "/",
+        headers: headers,
+        data: body,
+        params: params,
+        validateStatus: (status) => {
+          if (options.transparentResponse) {
+            return true;
+          } else {
+            if (status == 502 || status == 503 || status == 504 || status == 429 || status == 400) {
+              return false;
+            } else {
+              return status >= 200 && status < 300;
+            }
+          }
+        },
+      })
+      .then((response: AxiosResponse) => {
+        const sdoHeaders: Partial<DoResponse> = {
+          cookies: response.headers["Scrape.do-Cookies"],
+          remainingCredits: response.headers["Scrape.do-Remaining-Credits"],
+          requestCost: response.headers["Scrape.do-Request-Cost"],
+          resolvedURL: response.headers["Scrape.do-Resolved-Url"],
+          targetURL: response.headers["Scrape.do-Target-Url"],
+          initialStatusCode: response.headers["Scrape.do-Initial-Status-Code"],
+          targetRedirectedLocation: response.headers["Scrape.do-Target-Redirected-Location"],
+        };
+        if (options.returnJSON) {
+          return {
+            statusCode: response.status,
+            ...response.data,
+            ...sdoHeaders,
+          };
+        } else {
+          return {
+            statusCode: response.status,
+            content: response.data,
+            ...sdoHeaders,
+          };
+        }
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.data && error.response.status == 400 && error.response.data["Message"]) {
+          return {
+            url: error.response.data["URL"],
+            statusCode: error.response.data["StatusCode"],
+            message: error.response.data["Message"],
+            possibleCauses: error.response.data["PossibleCauses"],
+            contact: error.response.data["Contact"],
+          } as DoErrorResponse;
+        } else {
+          throw error;
+        }
+      });
   }
 
   /**

@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from "@jest/globals";
-import { ScrapeDo } from "../src/lib";
+import { ScrapeDo, } from "../src/lib";
 
 const TOKEN = process.env.TOKEN || "";
 
@@ -13,8 +13,8 @@ describe("Usability tests", () => {
       },
     });
 
-    expect(response.status).toBe(200);
-    expect(response.data.headers["A123"]).toStrictEqual(["Extra Header"]);
+    expect(response.statusCode).toBe(200);
+    expect(response..headers["A123"]).toStrictEqual(["Extra Header"]);
   });
   test("Should be able to get successful response with custom headers", async () => {
     const client = new ScrapeDo(TOKEN);

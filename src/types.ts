@@ -148,7 +148,13 @@ export type DoErrorResponse = {
 export interface DoRenderResponse {
   networkRequests?: any[];
   websocketResponses?: any[];
-  actionResults?: any[];
+  actionResults?: {
+    action: string;
+    error?: string;
+    success: boolean;
+    index: number;
+    response?: any;
+  }[];
   screenShots?: { type: string; image; string; error: string }[];
 }
 

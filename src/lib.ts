@@ -97,8 +97,6 @@ export class ScrapeDo {
       pwbParsed = JSON.stringify(options.playWithBrowser);
     }
 
-    console.log(encodeURIComponent(cookies || ""));
-
     const params = {
       ...options,
       extraHeaders: options.extraHeaders ? true : undefined,

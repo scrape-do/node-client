@@ -48,7 +48,7 @@ describe("Usability tests", () => {
         A123: "Cookie",
       },
     });
-    console.log(response.content);
+
     expect(response.statusCode).toBe(200);
     expect(response.content.headers["Cookie"]).toStrictEqual(["A123=Cookie"]);
   });

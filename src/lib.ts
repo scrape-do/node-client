@@ -1,171 +1,35 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 import { PlayWithBrowser } from "./playwithbrowser";
 import { GeoCode } from "./geocode";
+import { DoRequest, DoResponse, StatisticsResponse } from "./types";
 
 export const API_URL = "https://api.scrape.do";
 
-/**
- * Proxy options for the request
- * @property {boolean} [super] - Use super proxy
- * @property {GeoCode} [geoCode] - Geographical code
- * @property {"europe" | "asia" | "africa" | "oceania" | "northamerica" | "southamerica"} [regionalGeoCode] - Regional geographical code
- * @property {string} [sessionId] - Session ID for the proxy
- *
- * @see https://scrape.do/documentation/
- */
-type ProxyOptions = {
-  super?: boolean;
-  geoCode?: GeoCode;
-  regionalGeoCode?: "europe" | "asia" | "africa" | "oceania" | "northamerica" | "southamerica";
-  sessionId?: string;
-};
+export const ValidStatusCodes: number[] = [400, 401, 404, 405, 406, 409, 410, 411, 413, 414, 415, 416, 417, 418, 422, 424, 426, 428];
+export const ValidStatusCodeRanges: { min: number; max: number }[] = [
+  { min: 100, max: 299 },
+  { min: 300, max: 399 },
+];
 
 /**
- * Render options for the request
- * @property {boolean} [render] - Render the page
- * @property {"load" | "domcontentloaded" | "networkidle0" | "networkidle2"} [waitUntil] - Wait until the page is loaded
- * @property {number} [customWait] - Custom wait time
- * @property {string} [waitSelector] - Wait until the selector is loaded
- * @property {number} [width] - Width of the viewport
- * @property {number} [height] - Height of the viewport
- * @property {boolean} [blockResources] - Block unnecessary resources
- * @property {boolean} [screenShot] - Take a screenshot
- * @property {boolean} [fullScreenShot] - Take a full page screenshot
- * @property {string} [particularScreenShot] - Take a screenshot of a particular element
- * @property {PlayWithBrowser} [playWithBrowser] - Play with browser actions
- * @property {boolean} [returnJSON] - Return JSON response
- *
- * @see https://scrape.do/documentation/
- */
-type RenderOptions = {
-  render?: boolean;
-  waitUntil?: "load" | "domcontentloaded" | "networkidle0" | "networkidle2";
-  customWait?: number;
-  waitSelector?: string;
-  width?: number;
-  height?: number;
-  blockResources?: boolean;
-  screenShot?: boolean;
-  fullScreenShot?: boolean;
-  particularScreenShot?: string;
-  playWithBrowser?: PlayWithBrowser;
-  returnJSON?: boolean;
-};
-
-/**
- * Request options for the API
- * @property {string} url - URL of the request
- * @property {Record<string, string>} [customHeaders] - Custom headers for the request
- * @property {Record<string, string>} [extraHeaders] - Extra headers for the request (needs "sd-*" prefix!)
- * @property {Record<string, string>} [forwardHeaders] - Forward headers for the request
- * @property {Record<string, string>} [setCookies] - Set cookies for the request
- * @property {boolean} [disableRedirection] - Disable redirection
- * @property {string} [callback] - Callback URL
- * @property {number} [timeout] - Timeout for the request
- * @property {number} [retryTimeout] - Retry timeout for the request
- * @property {boolean} [disableRetry] - Disable retry
- * @property {"Desktop" | "Mobile"} [device] - Device for the request
- * @property {"raw" | "markdown"} [output] - Output format
- * @property {boolean} [transparentResponse] - Get transparent response
- * @property {ProxyOptions} [super] - Proxy options
- * @property {RenderOptions} [render] - Render options
- *
- * @see https://scrape.do/documentation/
- */
-export type DoRequest = {
-  url: string;
-  customHeaders?: Record<string, string>;
-  extraHeaders?: Record<string, string>;
-  forwardHeaders?: Record<string, string>;
-  setCookies?: Record<string, string>;
-  disableRedirection?: boolean;
-  callback?: string;
-  timeout?: number;
-  retryTimeout?: number;
-  disableRetry?: boolean;
-  device?: "Desktop" | "Mobile";
-  output?: "raw" | "markdown";
-  transparentResponse?: boolean;
-} & ProxyOptions &
-  RenderOptions;
-
-/**
- * Response of a failed request
- * @property {string} URL - URL of the request
- * @property {number} StatusCode - Status code of the response
- * @property {string[]} [Message] - Error message
- * @property {string[]} [PossibleCauses] - Possible causes of the error
- * @property {string} [Contact] - Contact information
- *
- * @see https://scrape.do/documentation/
- */
-export type DoErrorResponse = {
-  URL: string;
-  StatusCode: number;
-  Message?: string[];
-  PossibleCauses?: string[];
-  Contact?: string;
-};
-
-/**
- * Response of a successful render request with returnJSON set to true
- * @property {any[]} [networkRequests] - List of network requests
- * @property {any[]} [websocketResponses] - List of websocket responses
- * @property {any[]} [actionResults] - List of action results
- * @property {string} content - Rendered content
- * @property {any[]} [screenShots] - List of screenshots
- * @property {string} screenShots.type - Type of screenshot
- * @property {string} screenShots.image - Base64 encoded image
- * @property {string} screenShots.error - Error message
- *
- * @see https://scrape.do/documentation/
- */
-export type DoRenderJsonResponse = {
-  networkRequests?: any[];
-  websocketResponses?: any[];
-  actionResults?: any[];
-  content: string;
-  screenShots?: { type: string; image; string; error: string }[];
-};
-
-/**
- * Response of a statistics request
- * @property {boolean} IsActive - Subscription status
- * @property {number} ConcurrentRequest - Number of concurrent requests
- * @property {number} MaxMonthlyRequest - Maximum number of requests per month
- * @property {number} RemainingConcurrentRequest - Remaining number of concurrent requests
- * @property {number} RemainingMonthlyRequest - Remaining number of requests per month
- *
- * @see https://scrape.do/documentation/
- */
-export type StatisticsResponse = {
-  IsActive: boolean;
-  ConcurrentRequest: number;
-  MaxMonthlyRequest: number;
-  RemainingConcurrentRequest: number;
-  RemainingMonthlyRequest: number;
-};
-
-/**
- * Request client for scrape.do API
- * @property {string} token - API token
- * @method {function} doRequest - Make a request to the API
- * @method {function} statistics - Get statistics of the subscription
+ * The client used to interact with the Scrape.do API.
+ * @property {string} token - API token for authentication.
+ * @method {function} sendRequest - Sends a request to the Scrape.do API.
+ * @method {function} statistics - Retrieves usage statistics of the subscription.
  * @example
  * const client = new ScrapeDo("API_TOKEN");
- *   const response = await client.doRequest("GET", {
- *     url: "https://httpbin.co/anything",
- *     render: false,
- *   });
- * console.log(response.data);
- *
- * @see https://scrape.do/documentation/
+ * const response = await client.sendRequest("GET", {
+ *   url: "https://httpbin.co/anything",
+ *   render: false,
+ * });
+ * console.log(response);
  */
 export class ScrapeDo {
   private reqClient: AxiosInstance;
 
   /**
-   * @param token - API token
+   * Initializes a new instance of ScrapeDo.
+   * @param token - The API token used for authenticating requests.
    */
   constructor(public token: string) {
     this.reqClient = axios.create({
@@ -181,15 +45,11 @@ export class ScrapeDo {
    * @param method - HTTP method
    * @param options - Scraping options
    * @param body - Request body if method is POST
-   * @param validateStatus - Function to validate status code of the response (default: axios default)
    * @returns Response of the scraping result or error message
    *
    * @see https://scrape.do/documentation/
    */
-  async sendRequest(method: string, options: DoRequest, body?: any, validateStatus?: (status: number) => boolean) {
-    if (!validateStatus) {
-      validateStatus = (status) => true;
-    }
+  async sendRequest(method: string, options: DoRequest, body?: any): Promise<DoResponse> {
     let headers: Record<string, string> = {};
     let cookies: string | undefined;
     let pwbParsed: string | undefined;
@@ -246,23 +106,82 @@ export class ScrapeDo {
       playWithBrowser: pwbParsed,
     };
 
-    return this.reqClient.request({
-      method: method,
-      url: "/",
-      headers: headers,
-      data: body,
-      params: params,
-      validateStatus,
-    });
+    return this.reqClient
+      .request<DoResponse>({
+        method: method,
+        url: "/",
+        headers: headers,
+        data: body,
+        params: params,
+        validateStatus: (status) => {
+          if (options.transparentResponse) {
+            return true;
+          } else {
+            if (ValidStatusCodes.includes(status) || ValidStatusCodeRanges.some((range) => status >= range.min && status <= range.max)) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+        },
+      })
+      .then((response: AxiosResponse) => {
+        const sdoHeaders: Partial<DoResponse> = {
+          cookies: response.headers["Scrape.do-Cookies"],
+          remainingCredits: response.headers["Scrape.do-Remaining-Credits"],
+          requestCost: response.headers["Scrape.do-Request-Cost"],
+          resolvedURL: response.headers["Scrape.do-Resolved-Url"],
+          targetURL: response.headers["Scrape.do-Target-Url"],
+          initialStatusCode: response.headers["Scrape.do-Initial-Status-Code"],
+          targetRedirectedLocation: response.headers["Scrape.do-Target-Redirected-Location"],
+        };
+
+        if (options.returnJSON) {
+          return {
+            url: options.url,
+            statusCode: response.status,
+            ...response.data,
+            ...sdoHeaders,
+          };
+        } else if (response.data["Message"]) {
+          return {
+            url: options.url,
+            statusCode: response.status,
+            message: response.data["Message"],
+            possibleCauses: response.data["PossibleCauses"],
+            contact: response.data["Contact"],
+          };
+        } else {
+          return {
+            url: options.url,
+            statusCode: response.status,
+            content: response.data,
+            ...sdoHeaders,
+          };
+        }
+      })
+      .catch((error: AxiosError) => {
+        if (error.response?.data && error.response.data["Message"]) {
+          return {
+            url: error.response.data["URL"],
+            statusCode: error.response.data["StatusCode"],
+            message: error.response.data["Message"],
+            possibleCauses: error.response.data["PossibleCauses"],
+            contact: error.response.data["Contact"],
+          };
+        } else {
+          throw error;
+        }
+      });
   }
 
   /**
    * Get statistics of the subscription
    * @returns Statistics of the subscription
    *
-   * @see https://scrape.do/documentation/
+   * @see https://scrape.do/documentation/#usage-statistics-api
    */
   async statistics() {
-    return this.reqClient.get<StatisticsResponse>("/statistics");
+    return this.reqClient.get<StatisticsResponse>("/info").then((response) => response.data);
   }
 }

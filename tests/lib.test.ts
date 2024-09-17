@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from "@jest/globals";
-import { ScrapeDo, } from "../src/lib";
+import { ScrapeDo } from "../src/lib";
 
 const TOKEN = process.env.TOKEN || "";
 
@@ -14,7 +14,7 @@ describe("Usability tests", () => {
     });
 
     expect(response.statusCode).toBe(200);
-    expect(response..headers["A123"]).toStrictEqual(["Extra Header"]);
+    expect(response.content.headers["A123"]).toStrictEqual(["Extra Header"]);
   });
   test("Should be able to get successful response with custom headers", async () => {
     const client = new ScrapeDo(TOKEN);
@@ -25,8 +25,8 @@ describe("Usability tests", () => {
       },
     });
 
-    expect(response.status).toBe(200);
-    expect(response.data.headers["A123"]).toStrictEqual(["Custom Header"]);
+    expect(response.statusCode).toBe(200);
+    expect(response.content.headers["A123"]).toStrictEqual(["Custom Header"]);
   });
   test("Should be able to get successful response with forward headers", async () => {
     const client = new ScrapeDo(TOKEN);
@@ -37,8 +37,8 @@ describe("Usability tests", () => {
       },
     });
 
-    expect(response.status).toBe(200);
-    expect(response.data.headers["A123"]).toStrictEqual(["Forward Header"]);
+    expect(response.statusCode).toBe(200);
+    expect(response.content.headers["A123"]).toStrictEqual(["Forward Header"]);
   });
   test("Should be able to get successful response with cookies", async () => {
     const client = new ScrapeDo(TOKEN);
@@ -48,9 +48,9 @@ describe("Usability tests", () => {
         A123: "Cookie",
       },
     });
-
-    expect(response.status).toBe(200);
-    expect(response.data.headers["Cookie"]).toStrictEqual(["A123=Cookie"]);
+    console.log(response.content);
+    expect(response.statusCode).toBe(200);
+    expect(response.content.headers["Cookie"]).toStrictEqual(["A123=Cookie"]);
   });
   test("Should throw error if setCookies is used with customHeaders", async () => {
     const client = new ScrapeDo(TOKEN);
@@ -71,6 +71,7 @@ describe("Usability tests", () => {
     const response = await client.sendRequest("GET", {
       url: "https://httpbin.co/anything",
       render: true,
+      returnJSON: true,
       playWithBrowser: [
         {
           Action: "WaitSelector",
@@ -79,7 +80,10 @@ describe("Usability tests", () => {
       ],
     });
 
-    expect(response.status).toBe(200);
+    expect(response.statusCode).toBe(200);
+    expect(response.actionResults).toHaveLength(1);
+    expect(response.actionResults![0].action).toBe("WaitSelector");
+    expect(response.actionResults![0].success).toBe(true);
   });
   test("Should get successful response with render and super proxy", async () => {
     const client = new ScrapeDo(TOKEN);
@@ -89,6 +93,13 @@ describe("Usability tests", () => {
       super: true,
     });
 
-    expect(response.status).toBe(200);
+    expect(response.statusCode).toBe(200);
+  });
+  test("Should get successful response from statistics request", async () => {
+    const client = new ScrapeDo(TOKEN);
+    const stats = await client.statistics();
+
+    expect(stats.IsActive).toBe(true);
+    expect(stats.RemainingMonthlyRequest).toBeGreaterThan(0);
   });
 });

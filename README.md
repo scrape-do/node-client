@@ -34,7 +34,7 @@ const response = await client.sendRequest("GET", {
   super: true,
 });
 
-console.log(response.data);
+console.log(response);
 ```
 
 ### [Geo Targeting](https://scrape.do/documentation/#geo-targeting?utm_source=github&utm_medium=node-client)
@@ -48,7 +48,7 @@ const response = await client.sendRequest("GET", {
   geoCode: "us",
 });
 
-console.log(response.data);
+console.log(response);
 ```
 
 ### [Regional Geo Targeting](https://scrape.do/documentation/#regional-geo-targeting?utm_source=github&utm_medium=node-client)
@@ -62,7 +62,7 @@ const response = await client.sendRequest("GET", {
   regionalGeoCode: "europe",
 });
 
-console.log(response.data);
+console.log(response);
 ```
 
 ### [Sticky Sessions](https://scrape.do/documentation/#sticky-sessions?utm_source=github&utm_medium=node-client)
@@ -85,7 +85,7 @@ const response = await client.sendRequest("GET", {
   sessionId: "1234",
 });
 
-console.log(response.data);
+console.log(response);
 ```
 
 ### [Custom Headers](https://scrape.do/documentation/#custom-headers?utm_source=github&utm_medium=node-client)
@@ -101,7 +101,7 @@ const response = await client.sendRequest("GET", {
   },
 });
 
-console.log(response.data);
+console.log(response);
 ```
 
 ### [Extra Headers](https://scrape.do/documentation/#extra-headers?utm_source=github&utm_medium=node-client)
@@ -119,7 +119,7 @@ const response = await client.sendRequest("GET", {
   },
 });
 
-console.log(response.data);
+console.log(response);
 ```
 
 ### [Forward Headers](https://scrape.do/documentation/#forward-headers?utm_source=github&utm_medium=node-client)
@@ -135,7 +135,7 @@ const response = await client.sendRequest("GET", {
   },
 });
 
-console.log(response.data);
+console.log(response);
 ```
 
 ### [JS Render](https://scrape.do/documentation/#js-render?utm_source=github&utm_medium=node-client)
@@ -149,7 +149,16 @@ const response = await client.sendRequest("GET", {
   render: true,
 });
 
-console.log(response.data);
+console.log(response);
+```
+
+### Get account statistics
+
+```typescript
+const client = new ScrapeDo("example_token");
+const stats = await client.statistics();
+
+console.log(stats);
 ```
 
 ### Final bonus example (render, super, geoCode, playWithBrowser)
@@ -176,7 +185,7 @@ const response = await client.sendRequest("GET", {
   ],
 });
 
-console.log(response.data);
+console.log(response);
 ```
 
 ## Official links

@@ -152,7 +152,20 @@ const response = await client.sendRequest("GET", {
 console.log(response);
 ```
 
-### Get account statistics
+### [Get account statistics](https://scrape.do/documentation/#usage-statistics-api?utm_source=github&utm_medium=node-client)
+
+The statistics() method allows you to retrieve real-time usage statistics for your subscription. This API call returns details such as your current subscription status, the number of concurrent requests allowed, the total and remaining requests per month, and how many concurrent requests are still available.
+
+Key information retrieved:
+
+- IsActive: Indicates whether your subscription is active.
+- ConcurrentRequest: The total number of concurrent requests your subscription supports.
+- MaxMonthlyRequest: The maximum number of requests allowed per month.
+- RemainingConcurrentRequest: The number of concurrent requests you have left at the current time.
+- RemainingMonthlyRequest: The remaining number of requests you can send this month.
+
+> [!WARNING]
+> For security reasons, you can send up to 10 requests per minute to this endpoint. If you exceed this rate, you will receive a 429 Too Many Requests error.
 
 ```typescript
 const client = new ScrapeDo("example_token");

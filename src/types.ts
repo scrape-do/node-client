@@ -173,3 +173,30 @@ export interface StatisticsResponse {
   RemainingConcurrentRequest: number;
   RemainingMonthlyRequest: number;
 }
+
+
+/**
+ * Configuration for a fetch request.
+ * @property {string} method - HTTP method for the request.
+ * @property {string} params - Query parameters for the request.
+ * @property {any} data - Data to be sent with the request.
+ * @property {Record<string, string>} headers - Headers for the request.
+ * @property {string} path - Path for the request.
+ */
+export interface FetchConfig {
+  method?: string;
+  params?: any;
+  data?: any;
+  headers?: Record<string, string>;
+  path: string;
+}
+
+
+/**
+ * Response structure for a fetch request.
+ * @property {any} data - Data returned from the request.
+ * @property {Response} response - Response object from the fetch request.
+ */
+export interface MakeRequestResponse extends Response {
+  data?: any;
+}

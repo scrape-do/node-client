@@ -1,7 +1,14 @@
 <p align="center">
   <img width="100" height="100" src="https://avatars.githubusercontent.com/u/67231321?s=200&v=4">
    <h3 align="center">Scrape Do Node Client</h3>
-   <p align="center">Scrape.do's official http client for node.js</p>
+   <p align="center">Get unblocked while scraping the web - we bypass anti-bots and rotate proxies while you only pay for successful requests.</p>
+
+   <p align="center">
+      <img src="https://img.shields.io/npm/v/@scrape-do/client/" />
+      <img src="https://github.com/scrape-do/node-client/actions/workflows/build-test.yml/badge.svg?branch=main" />
+      <img src="https://img.shields.io/github/issues/scrape-do/node-client" alt="Issues" />
+      <img src="https://img.shields.io/github/license/scrape-do/node-client" alt="License" />
+   </p>
 </p>
 
 ## How to install?
@@ -15,14 +22,16 @@ or install with github
 npm install git://git@github.com/scrape-do/node-client
 ```
 
-## How to build from scratch
-If you want to contribute to the library or include your own customisations, you can recompile the library in this way.
+## How Do I Import the Library?
 
-```bash
-git clone https://github.com/scrape-do/node-client
-npm i
-# build with
-npm build
+```js
+// CommonJS
+const { ScrapeDo } = require("@scrape-do/client");
+```
+
+```typescript
+// Module - TypeScript
+import { ScrapeDo } from '@scrape-do/client'
 ```
 
 ## Example Usages
@@ -200,8 +209,11 @@ console.log(stats);
 
 In this example, multiple parameters are combined to showcase advanced scraping capabilities. By using a combination of render, super, geoCode, and playWithBrowser, you can perform complex scraping tasks that require JavaScript execution, residential proxies, geographical targeting, and interactive browser actions:
 
-- [render: true](https://scrape.do/documentation/#js-render?utm_source=github&utm_medium=node-client): Enables JavaScript execution to fully render the webpage, allowing for the scraping of dynamic content that relies on client-side scripting.
-- [super: true](https://scrape.do/documentation/#super-residential--mobile?utm_source=github&utm_medium=node-client): Utilizes a residential proxy, which makes the request appear as if it is coming from a typical user on a mobile network, providing enhanced anonymity and avoiding blocks from anti-scraping measures.
+> [!WARNING]
+> The browser created with this endpoint can be detected. It can be used for simple tasks such as waiting for the page to load, interacting with the page in your scraping tasks.
+
+- [render](https://scrape.do/documentation/#js-render?utm_source=github&utm_medium=node-client): Enables JavaScript execution to fully render the webpage, allowing for the scraping of dynamic content that relies on client-side scripting.
+- [super](https://scrape.do/documentation/#super-residential--mobile?utm_source=github&utm_medium=node-client): Utilizes a residential proxy, which makes the request appear as if it is coming from a typical user on a mobile network, providing enhanced anonymity and avoiding blocks from anti-scraping measures.
 - [geoCode](https://scrape.do/documentation/#geo-targeting?utm_source=github&utm_medium=node-client): "us": Targets a specific geographic location for the request, in this case, the United States. This is useful for scraping content that varies by region, such as localized prices or region-specific data.
 - [playWithBrowser](https://scrape.do/documentation/#play-with-browser?utm_source=github&utm_medium=node-client): Provides the ability to interact with the browser while rendering the page. For example, you can wait for specific elements to load or perform actions like clicking buttons. In this case, it waits for the <body> element to ensure the page is fully loaded before proceeding.
 
@@ -224,6 +236,17 @@ const response = await client.sendRequest("GET", {
 
 console.log(response);
 ```
+
+## How to build from scratch
+If you want to contribute to the library or include your own customisations, you can recompile the library in this way.
+
+```bash
+git clone https://github.com/scrape-do/node-client
+npm i
+# build with
+npm build
+```
+
 
 ## Official links
 

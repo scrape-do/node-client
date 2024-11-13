@@ -115,6 +115,7 @@ export type DoResponse = {
  * @property {string} [targetURL] - The target URL that was scraped
  * @property {string} [initialStatusCode] - The status code of the initial request before any redirects
  * @property {string} [targetRedirectedLocation] - Final location after following redirects
+ * @property {Record<string, string>} [sdoResponseHeaders] - Additional headers returned in the response
  */
 export interface DoHeaders {
   cookies?: string;
@@ -124,6 +125,7 @@ export interface DoHeaders {
   targetURL?: string;
   initialStatusCode?: string;
   targetRedirectedLocation?: string;
+  sdoResponseHeaders?: Record<string, string>;
 }
 
 /**
@@ -195,8 +197,10 @@ export interface FetchConfig {
 /**
  * Response structure for a fetch request.
  * @property {any} data - Data returned from the request.
+ * @property {Record<string, string>} sdoResponseHeaders - Contains the headers returned from the request sent to Scrape.do. It is independent of the headers in the request sent to the site.
  * @property {Response} response - Response object from the fetch request.
  */
 export interface MakeRequestResponse extends Response {
   data?: any;
+  sdoResponseHeaders?: Record<string, string>;
 }

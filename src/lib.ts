@@ -59,6 +59,9 @@ export class ScrapeDo {
     try { data = JSON.parse(data) } catch { }
 
     response.data = data
+    
+    // There may be information that you want to get from the returned header. However, since this is not an important part, it is not important to get an error.
+    try { response.sdoResponseHeaders = Object.fromEntries(response.headers); } catch { }
 
     if (ValidStatusCodes.includes(response.status) || ValidStatusCodeRanges.some((range) => response.status >= range.min && response.status <= range.max)) {
       return response
@@ -143,14 +146,16 @@ export class ScrapeDo {
       params,
     })
       .then((response: MakeRequestResponse) => {
+        // sdoResponseHeaders will return empty if Object.fromEntries fails. For this reason, .get is used when getting header values.
         const sdoHeaders: Partial<DoResponse> = {
-          cookies: response.headers["Scrape.do-Cookies"],
-          remainingCredits: response.headers["Scrape.do-Remaining-Credits"],
-          requestCost: response.headers["Scrape.do-Request-Cost"],
-          resolvedURL: response.headers["Scrape.do-Resolved-Url"],
-          targetURL: response.headers["Scrape.do-Target-Url"],
-          initialStatusCode: response.headers["Scrape.do-Initial-Status-Code"],
-          targetRedirectedLocation: response.headers["Scrape.do-Target-Redirected-Location"],
+          cookies: response.headers.get("scrape.do-cookies")?.toString(),
+          remainingCredits: response.headers.get("scrape.do-remaining-credits")?.toString(),
+          requestCost: response.headers.get("scrape.do-request-cost")?.toString(),
+          resolvedURL: response.headers.get("scrape.do-resolved-url")?.toString(),
+          targetURL: response.headers.get("scrape.do-target-url")?.toString(),
+          initialStatusCode: response.headers.get("scrape.do-initial-status-code")?.toString(),
+          targetRedirectedLocation: response.headers.get("scrape.do-target-redirected-location")?.toString(),
+          sdoResponseHeaders: response.sdoResponseHeaders
         };
 
         if (options.returnJSON) {

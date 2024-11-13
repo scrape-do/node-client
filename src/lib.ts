@@ -1,7 +1,7 @@
-import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 import { PlayWithBrowser } from "./playwithbrowser";
 import { GeoCode } from "./geocode";
-import { DoRequest, DoResponse, StatisticsResponse } from "./types";
+import { DoRequest, DoResponse, StatisticsResponse, FetchConfig, MakeRequestResponse } from "./types";
+import qs from "qs";
 
 export const API_URL = "https://api.scrape.do";
 
@@ -25,19 +25,50 @@ export const ValidStatusCodeRanges: { min: number; max: number }[] = [
  * console.log(response);
  */
 export class ScrapeDo {
-  private reqClient: AxiosInstance;
 
   /**
    * Initializes a new instance of ScrapeDo.
    * @param token - The API token used for authenticating requests.
    */
   constructor(public token: string) {
-    this.reqClient = axios.create({
-      baseURL: API_URL,
-      params: {
-        token: token,
-      },
-    });
+    this.token = token;
+  }
+
+  /**
+   * Make a scrape request to the API
+   * @param config - Configuration for the request
+   * @returns Response of the scraping result or error
+   */
+
+  async makeRequest(config: FetchConfig): Promise<MakeRequestResponse> {
+    let headers: Record<string, string> = config.headers || {};
+
+    if (typeof config?.data === 'object') {
+      config.data = JSON.stringify(config.data);
+      headers['content-type'] = 'application/json';
+    }
+    let reqUrl = `${API_URL}${config.path}?${qs.stringify(config.params, { indices: false })}`
+
+    let response: MakeRequestResponse = await fetch(reqUrl, {
+      headers,
+      method: config.method || 'GET',
+      body: config.data
+    })
+
+    let data: string | any = await response.text();
+    try { data = JSON.parse(data) } catch { }
+
+    response.data = data
+    
+    // There may be information that you want to get from the returned header. However, since this is not an important part, it is not important to get an error.
+    try { response.sdoResponseHeaders = Object.fromEntries(response.headers); } catch { }
+
+    if (ValidStatusCodes.includes(response.status) || ValidStatusCodeRanges.some((range) => response.status >= range.min && response.status <= range.max)) {
+      return response
+    } else {
+      throw response
+    }
+
   }
 
   /**
@@ -104,36 +135,27 @@ export class ScrapeDo {
       customHeaders: options.customHeaders ? true : undefined,
       setCookies: cookies,
       playWithBrowser: pwbParsed,
+      token: this.token
     };
 
-    return this.reqClient
-      .request<DoResponse>({
-        method: method,
-        url: "/",
-        headers: headers,
-        data: body,
-        params: params,
-        validateStatus: (status) => {
-          if (options.transparentResponse) {
-            return true;
-          } else {
-            if (ValidStatusCodes.includes(status) || ValidStatusCodeRanges.some((range) => status >= range.min && status <= range.max)) {
-              return true;
-            } else {
-              return false;
-            }
-          }
-        },
-      })
-      .then((response: AxiosResponse) => {
+    return this.makeRequest({
+      method: method,
+      path: "/",
+      headers: headers,
+      data: body,
+      params,
+    })
+      .then((response: MakeRequestResponse) => {
+        // sdoResponseHeaders will return empty if Object.fromEntries fails. For this reason, .get is used when getting header values.
         const sdoHeaders: Partial<DoResponse> = {
-          cookies: response.headers["Scrape.do-Cookies"],
-          remainingCredits: response.headers["Scrape.do-Remaining-Credits"],
-          requestCost: response.headers["Scrape.do-Request-Cost"],
-          resolvedURL: response.headers["Scrape.do-Resolved-Url"],
-          targetURL: response.headers["Scrape.do-Target-Url"],
-          initialStatusCode: response.headers["Scrape.do-Initial-Status-Code"],
-          targetRedirectedLocation: response.headers["Scrape.do-Target-Redirected-Location"],
+          cookies: response.headers.get("scrape.do-cookies")?.toString(),
+          remainingCredits: response.headers.get("scrape.do-remaining-credits")?.toString(),
+          requestCost: response.headers.get("scrape.do-request-cost")?.toString(),
+          resolvedURL: response.headers.get("scrape.do-resolved-url")?.toString(),
+          targetURL: response.headers.get("scrape.do-target-url")?.toString(),
+          initialStatusCode: response.headers.get("scrape.do-initial-status-code")?.toString(),
+          targetRedirectedLocation: response.headers.get("scrape.do-target-redirected-location")?.toString(),
+          sdoResponseHeaders: response.sdoResponseHeaders
         };
 
         if (options.returnJSON) {
@@ -160,14 +182,14 @@ export class ScrapeDo {
           };
         }
       })
-      .catch((error: AxiosError) => {
-        if (error.response?.data && error.response.data["Message"]) {
+      .catch((error: MakeRequestResponse) => {
+        if (error.data && error.data["Message"]) {
           return {
-            url: error.response.data["URL"],
-            statusCode: error.response.data["StatusCode"],
-            message: error.response.data["Message"],
-            possibleCauses: error.response.data["PossibleCauses"],
-            contact: error.response.data["Contact"],
+            url: error.data["URL"],
+            statusCode: error.data["StatusCode"],
+            message: error.data["Message"],
+            possibleCauses: error.data["PossibleCauses"],
+            contact: error.data["Contact"],
           };
         } else {
           throw error;
@@ -182,6 +204,7 @@ export class ScrapeDo {
    * @see https://scrape.do/documentation/#usage-statistics-api
    */
   async statistics() {
-    return this.reqClient.get<StatisticsResponse>("/info").then((response) => response.data);
+    return this.makeRequest({ path: "/info", params: { token: this.token } })
+      .then((response): StatisticsResponse => response.data);
   }
 }

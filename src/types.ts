@@ -115,6 +115,7 @@ export type DoResponse = {
  * @property {string} [targetURL] - The target URL that was scraped
  * @property {string} [initialStatusCode] - The status code of the initial request before any redirects
  * @property {string} [targetRedirectedLocation] - Final location after following redirects
+ * @property {Record<string, string>} [sdoResponseHeaders] - Additional headers returned in the response
  */
 export interface DoHeaders {
   cookies?: string;
@@ -124,6 +125,7 @@ export interface DoHeaders {
   targetURL?: string;
   initialStatusCode?: string;
   targetRedirectedLocation?: string;
+  sdoResponseHeaders?: Record<string, string>;
 }
 
 /**
@@ -172,4 +174,33 @@ export interface StatisticsResponse {
   MaxMonthlyRequest: number;
   RemainingConcurrentRequest: number;
   RemainingMonthlyRequest: number;
+}
+
+
+/**
+ * Configuration for a fetch request.
+ * @property {string} method - HTTP method for the request.
+ * @property {string} params - Query parameters for the request.
+ * @property {any} data - Data to be sent with the request.
+ * @property {Record<string, string>} headers - Headers for the request.
+ * @property {string} path - Path for the request.
+ */
+export interface FetchConfig {
+  method?: string;
+  params?: any;
+  data?: any;
+  headers?: Record<string, string>;
+  path: string;
+}
+
+
+/**
+ * Response structure for a fetch request.
+ * @property {any} data - Data returned from the request.
+ * @property {Record<string, string>} sdoResponseHeaders - Contains the headers returned from the request sent to Scrape.do. It is independent of the headers in the request sent to the site.
+ * @property {Response} response - Response object from the fetch request.
+ */
+export interface MakeRequestResponse extends Response {
+  data?: any;
+  sdoResponseHeaders?: Record<string, string>;
 }

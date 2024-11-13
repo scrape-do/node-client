@@ -1,24 +1,37 @@
-# @scrape-do/client
+<p align="center">
+  <img width="100" height="100" src="https://avatars.githubusercontent.com/u/67231321?s=200&v=4">
+   <h3 align="center">Scrape Do Node Client</h3>
+   <p align="center">Get unblocked while scraping the web - we bypass anti-bots and rotate proxies while you only pay for successful requests.</p>
 
-#### Scrape.do's official http client for node.js
+   <p align="center">
+      <img src="https://img.shields.io/npm/v/@scrape-do/client/" />
+      <img src="https://github.com/scrape-do/node-client/actions/workflows/build-test.yml/badge.svg?branch=main" />
+      <img src="https://img.shields.io/github/issues/scrape-do/node-client" alt="Issues" />
+      <img src="https://img.shields.io/github/license/scrape-do/node-client" alt="License" />
+   </p>
+</p>
 
 ## How to install?
 
 ```bash
-> npm install @scrape-do/client
-# or get it from github
-> npm install git://git@github.com/scrape-do/node-client
+npm i @scrape-do/client
 ```
-
-## How to build from scratch
-
-#### If you want to contribute to the library or include your own customisations, you can recompile the library in this way.
+or install with github
 
 ```bash
-> git clone https://github.com/scrape-do/node-client
-> npm i
-# build with
-> npm build
+npm install git://git@github.com/scrape-do/node-client
+```
+
+## How Do I Import the Library?
+
+```js
+// CommonJS
+const { ScrapeDo } = require("@scrape-do/client");
+```
+
+```typescript
+// Module - TypeScript
+import { ScrapeDo } from '@scrape-do/client'
 ```
 
 ## Example Usages
@@ -28,7 +41,9 @@
 The super parameter enables the use of a residential proxy for the request. When this parameter is set to true, the request will be routed through a residential IP address. This means that the IP address will typically appear as if it belongs to a mobile network provider, adding an additional layer of anonymity and making the request look more like regular web traffic.
 
 ```typescript
-const client = new ScrapeDo("example_token");
+const { ScrapeDo } = require("@scrape-do/client");
+
+const client = new ScrapeDo("your_api_token");
 const response = await client.sendRequest("GET", {
   url: "https://httpbin.co/anything",
   super: true,
@@ -42,7 +57,9 @@ console.log(response);
 The geoCode parameter allows you to specify the geographic location from which the request should appear to originate. By setting a specific country code, such as "us" for the United States, the request will be routed through an IP address from that region. This is especially useful for scraping websites that serve region-specific content or pricing, allowing you to access data as if you were browsing from that location.
 
 ```typescript
-const client = new ScrapeDo("example_token");
+const { ScrapeDo } = require("@scrape-do/client");
+
+const client = new ScrapeDo("your_api_token");
 const response = await client.sendRequest("GET", {
   url: "https://httpbin.co/anything",
   geoCode: "us",
@@ -56,7 +73,9 @@ console.log(response);
 The regionalGeoCode parameter allows you to target requests from a broader geographic region, rather than a specific country. By specifying a regional code such as "europe" or "asia", your request will be routed through an IP address from that particular region. This is useful for scraping content that may be region-restricted, or for accessing region-specific data without the need to specify individual country codes.
 
 ```typescript
-const client = new ScrapeDo("example_token");
+const { ScrapeDo } = require("@scrape-do/client");
+
+const client = new ScrapeDo("your_api_token");
 const response = await client.sendRequest("GET", {
   url: "https://httpbin.co/anything",
   regionalGeoCode: "europe",
@@ -79,7 +98,9 @@ Key points to note:
 - Sessions only for successful requests: A session will only be created if the initial request is successful.
 
 ```typescript
-const client = new ScrapeDo("example_token");
+const { ScrapeDo } = require("@scrape-do/client");
+
+const client = new ScrapeDo("your_api_token");
 const response = await client.sendRequest("GET", {
   url: "https://httpbin.co/anything",
   sessionId: "1234",
@@ -93,7 +114,9 @@ console.log(response);
 The customHeaders option gives you full control over all headers sent to the target website. When you use customHeaders, the headers you provide will completely replace the default ones. This feature is useful when you need to define specific headers like User-Agent, Accept, Cookies, and more, ensuring that only your specified headers are sent with the request.
 
 ```typescript
-const client = new ScrapeDo("example_token");
+const { ScrapeDo } = require("@scrape-do/client");
+
+const client = new ScrapeDo("your_api_token");
 const response = await client.sendRequest("GET", {
   url: "https://httpbin.co/anything",
   customHeaders: {
@@ -111,7 +134,9 @@ extraHeaders is used when you want to add one or more headers specifically requi
 The following example returns the response of how you requested from httpbin.co. You should see the ‘Key’ header in the header section of the response.
 
 ```typescript
-const client = new ScrapeDo("example_token");
+const { ScrapeDo } = require("@scrape-do/client");
+
+const client = new ScrapeDo("your_api_token");
 const response = await client.sendRequest("GET", {
   url: "https://httpbin.co/anything",
   extraHeaders: {
@@ -127,7 +152,9 @@ console.log(response);
 The forwardHeaders option is ideal when you want to forward your custom headers directly to the target website without any additional headers being generated or modified by the service. This approach makes the request appear as if it is being made directly from your end, preserving the original header structure.
 
 ```typescript
-const client = new ScrapeDo("example_token");
+const { ScrapeDo } = require("@scrape-do/client");
+
+const client = new ScrapeDo("your_api_token");
 const response = await client.sendRequest("GET", {
   url: "https://httpbin.co/anything",
   forwardHeaders: {
@@ -143,7 +170,9 @@ console.log(response);
 The render parameter allows for the execution of JavaScript during the request, enabling full browser-like rendering. When this parameter is set to true, the service will render the target webpage as if it were being loaded in a real browser, executing all JavaScript, loading dynamic content, and handling client-side interactions. This approach is particularly useful for scraping websites that rely heavily on JavaScript to display their content, providing a more accurate and “humanized” view of the page.
 
 ```typescript
-const client = new ScrapeDo("example_token");
+const { ScrapeDo } = require("@scrape-do/client");
+
+const client = new ScrapeDo("your_api_token");
 const response = await client.sendRequest("GET", {
   url: "https://httpbin.co/anything",
   render: true,
@@ -168,7 +197,9 @@ Key information retrieved:
 > For security reasons, you can send up to 10 requests per minute to this endpoint. If you exceed this rate, you will receive a 429 Too Many Requests error.
 
 ```typescript
-const client = new ScrapeDo("example_token");
+const { ScrapeDo } = require("@scrape-do/client");
+
+const client = new ScrapeDo("your_api_token");
 const stats = await client.statistics();
 
 console.log(stats);
@@ -178,13 +209,18 @@ console.log(stats);
 
 In this example, multiple parameters are combined to showcase advanced scraping capabilities. By using a combination of render, super, geoCode, and playWithBrowser, you can perform complex scraping tasks that require JavaScript execution, residential proxies, geographical targeting, and interactive browser actions:
 
-- [render: true](https://scrape.do/documentation/#js-render?utm_source=github&utm_medium=node-client): Enables JavaScript execution to fully render the webpage, allowing for the scraping of dynamic content that relies on client-side scripting.
-- [super: true](https://scrape.do/documentation/#super-residential--mobile?utm_source=github&utm_medium=node-client): Utilizes a residential proxy, which makes the request appear as if it is coming from a typical user on a mobile network, providing enhanced anonymity and avoiding blocks from anti-scraping measures.
+> [!WARNING]
+> The browser created with this endpoint can be detected. It can be used for simple tasks such as waiting for the page to load, interacting with the page in your scraping tasks.
+
+- [render](https://scrape.do/documentation/#js-render?utm_source=github&utm_medium=node-client): Enables JavaScript execution to fully render the webpage, allowing for the scraping of dynamic content that relies on client-side scripting.
+- [super](https://scrape.do/documentation/#super-residential--mobile?utm_source=github&utm_medium=node-client): Utilizes a residential proxy, which makes the request appear as if it is coming from a typical user on a mobile network, providing enhanced anonymity and avoiding blocks from anti-scraping measures.
 - [geoCode](https://scrape.do/documentation/#geo-targeting?utm_source=github&utm_medium=node-client): "us": Targets a specific geographic location for the request, in this case, the United States. This is useful for scraping content that varies by region, such as localized prices or region-specific data.
 - [playWithBrowser](https://scrape.do/documentation/#play-with-browser?utm_source=github&utm_medium=node-client): Provides the ability to interact with the browser while rendering the page. For example, you can wait for specific elements to load or perform actions like clicking buttons. In this case, it waits for the <body> element to ensure the page is fully loaded before proceeding.
 
 ```typescript
-const client = new ScrapeDo("example_token");
+const { ScrapeDo } = require("@scrape-do/client");
+
+const client = new ScrapeDo("your_api_token");
 const response = await client.sendRequest("GET", {
   url: "https://example.com",
   render: true,
@@ -200,6 +236,17 @@ const response = await client.sendRequest("GET", {
 
 console.log(response);
 ```
+
+## How to build from scratch
+If you want to contribute to the library or include your own customisations, you can recompile the library in this way.
+
+```bash
+git clone https://github.com/scrape-do/node-client
+npm i
+# build with
+npm build
+```
+
 
 ## Official links
 

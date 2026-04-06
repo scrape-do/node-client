@@ -1,20 +1,20 @@
 {
-	"compilerOptions": {
-		"target": "ES2022",
-		"module": "CommonJS",
-		"outDir": "dist",
-		"lib": ["ES2022"],
-		"strict": true,
-		"types": ["node"],
-		"esModuleInterop": true,
-		"rootDir": "src",
-		"allowSyntheticDefaultImports": true,
-		"allowJs": true,
-		"resolveJsonModule": true,
-		"noImplicitAny": false,
-		"useUnknownInCatchVariables": false,
-		"declaration": true
-	},
-	"include": ["src/**/*.ts"],
-	"exclude": ["node_modules"]
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "outDir": "dist",
+    "lib": ["ES2022"],
+    "strict": true,
+    "types": ["node"],
+    "esModuleInterop": true,
+    "rootDir": "src",
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
+    "declaration": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

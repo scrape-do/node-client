@@ -1,5 +1,5 @@
-import { GeoCode } from "./geocode";
-import { PlayWithBrowser } from "./playwithbrowser";
+import type { GeoCode } from './geocode';
+import type { PlayWithBrowser } from './playwithbrowser';
 
 /**
  * Proxy options for the request.
@@ -11,7 +11,13 @@ import { PlayWithBrowser } from "./playwithbrowser";
 export type ProxyOptions = {
   super?: boolean;
   geoCode?: GeoCode;
-  regionalGeoCode?: "europe" | "asia" | "africa" | "oceania" | "northamerica" | "southamerica";
+  regionalGeoCode?:
+    | 'europe'
+    | 'asia'
+    | 'africa'
+    | 'oceania'
+    | 'northamerica'
+    | 'southamerica';
   sessionId?: string;
 };
 
@@ -32,7 +38,7 @@ export type ProxyOptions = {
  */
 export type RenderOptions = {
   render?: boolean;
-  waitUntil?: "load" | "domcontentloaded" | "networkidle0" | "networkidle2";
+  waitUntil?: 'load' | 'domcontentloaded' | 'networkidle0' | 'networkidle2';
   customWait?: number;
   waitSelector?: string;
   width?: number;
@@ -74,8 +80,8 @@ export type DoRequest = {
   timeout?: number;
   retryTimeout?: number;
   disableRetry?: boolean;
-  device?: "Desktop" | "Mobile";
-  output?: "raw" | "markdown";
+  device?: 'Desktop' | 'Mobile';
+  output?: 'raw' | 'markdown';
   transparentResponse?: boolean;
 } & ProxyOptions &
   RenderOptions;
@@ -176,7 +182,6 @@ export interface StatisticsResponse {
   RemainingMonthlyRequest: number;
 }
 
-
 /**
  * Configuration for a fetch request.
  * @property {string} method - HTTP method for the request.
@@ -192,7 +197,6 @@ export interface FetchConfig {
   headers?: Record<string, string>;
   path: string;
 }
-
 
 /**
  * Response structure for a fetch request.

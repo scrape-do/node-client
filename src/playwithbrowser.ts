@@ -1,38 +1,38 @@
 export type WaitSelectorParams = {
-  Action: "WaitSelector";
+  Action: 'WaitSelector';
   WaitSelector: string;
   Timeout?: number;
 };
 
 export type WaitParams = {
-  Action: "Wait";
+  Action: 'Wait';
   Timeout: number;
 };
 
 export type ClickParams = {
-  Action: "Click";
+  Action: 'Click';
   Selector: string;
 };
 
 export type ScrollParams = {
-  Action: "ScrollX" | "ScrollY" | "ScrollTo";
+  Action: 'ScrollX' | 'ScrollY' | 'ScrollTo';
   Selector?: string;
   Value: number;
 };
 
 export type FillParams = {
-  Action: "Fill";
+  Action: 'Fill';
   Selector: string;
   Value: string;
 };
 
 export type ExecuteParams = {
-  Action: "Execute";
+  Action: 'Execute';
   Execute: string;
 };
 
 export type ScreenShotParams = {
-  Action: "ScreenShot";
+  Action: 'ScreenShot';
   fullScreenShot?: string;
   particularScreenShot?: string;
 };
@@ -49,4 +49,5 @@ export type PlayWithBrowserActions = {
   Wait: WaitParams;
 };
 
-export type PlayWithBrowser = PlayWithBrowserActions[keyof PlayWithBrowserActions][];
+export type PlayWithBrowser =
+  PlayWithBrowserActions[keyof PlayWithBrowserActions][];

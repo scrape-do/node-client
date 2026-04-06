@@ -1,11 +1,18 @@
-import { PlayWithBrowser } from "./playwithbrowser";
-import { GeoCode } from "./geocode";
-import { DoRequest, DoResponse, StatisticsResponse, FetchConfig, MakeRequestResponse } from "./types";
-import qs from "qs";
+import qs from 'qs';
+import type {
+  DoRequest,
+  DoResponse,
+  FetchConfig,
+  MakeRequestResponse,
+  StatisticsResponse,
+} from './types';
 
-export const API_URL = "https://api.scrape.do";
+export const API_URL = 'https://api.scrape.do';
 
-export const ValidStatusCodes: number[] = [400, 401, 404, 405, 406, 409, 410, 411, 413, 414, 415, 416, 417, 418, 422, 424, 426, 428];
+export const ValidStatusCodes: number[] = [
+  400, 401, 404, 405, 406, 409, 410, 411, 413, 414, 415, 416, 417, 418, 422,
+  424, 426, 428,
+];
 export const ValidStatusCodeRanges: { min: number; max: number }[] = [
   { min: 100, max: 299 },
   { min: 300, max: 399 },
@@ -25,7 +32,6 @@ export const ValidStatusCodeRanges: { min: number; max: number }[] = [
  * console.log(response);
  */
 export class ScrapeDo {
-
   /**
    * Initializes a new instance of ScrapeDo.
    * @param token - The API token used for authenticating requests.
@@ -41,34 +47,42 @@ export class ScrapeDo {
    */
 
   async makeRequest(config: FetchConfig): Promise<MakeRequestResponse> {
-    let headers: Record<string, string> = config.headers || {};
+    const headers: Record<string, string> = config.headers || {};
 
     if (typeof config?.data === 'object') {
       config.data = JSON.stringify(config.data);
       headers['content-type'] = 'application/json';
     }
-    let reqUrl = `${API_URL}${config.path}?${qs.stringify(config.params, { indices: false })}`
+    const reqUrl = `${API_URL}${config.path}?${qs.stringify(config.params, { indices: false })}`;
 
-    let response: MakeRequestResponse = await fetch(reqUrl, {
+    const response: MakeRequestResponse = await fetch(reqUrl, {
       headers,
       method: config.method || 'GET',
-      body: config.data
-    })
+      body: config.data,
+    });
 
     let data: string | any = await response.text();
-    try { data = JSON.parse(data) } catch { }
+    try {
+      data = JSON.parse(data);
+    } catch {}
 
-    response.data = data
-    
+    response.data = data;
+
     // There may be information that you want to get from the returned header. However, since this is not an important part, it is not important to get an error.
-    try { response.sdoResponseHeaders = Object.fromEntries(response.headers); } catch { }
+    try {
+      response.sdoResponseHeaders = Object.fromEntries(response.headers);
+    } catch {}
 
-    if (ValidStatusCodes.includes(response.status) || ValidStatusCodeRanges.some((range) => response.status >= range.min && response.status <= range.max)) {
-      return response
+    if (
+      ValidStatusCodes.includes(response.status) ||
+      ValidStatusCodeRanges.some(
+        (range) => response.status >= range.min && response.status <= range.max,
+      )
+    ) {
+      return response;
     } else {
-      throw response
+      throw response;
     }
-
   }
 
   /**
@@ -80,13 +94,22 @@ export class ScrapeDo {
    *
    * @see https://scrape.do/documentation/
    */
-  async sendRequest(method: string, options: DoRequest, body?: any): Promise<DoResponse> {
+  async sendRequest(
+    method: string,
+    options: DoRequest,
+    body?: any,
+  ): Promise<DoResponse> {
     let headers: Record<string, string> = {};
     let cookies: string | undefined;
     let pwbParsed: string | undefined;
 
-    if (options.setCookies && (options.customHeaders || options.extraHeaders || options.forwardHeaders)) {
-      throw new Error("setCookies cannot be used with customHeaders, extraHeaders or forwardHeaders");
+    if (
+      options.setCookies &&
+      (options.customHeaders || options.extraHeaders || options.forwardHeaders)
+    ) {
+      throw new Error(
+        'setCookies cannot be used with customHeaders, extraHeaders or forwardHeaders',
+      );
     }
 
     if (options.customHeaders) {
@@ -97,8 +120,8 @@ export class ScrapeDo {
     }
 
     if (options.extraHeaders) {
-      for (let key in options.extraHeaders) {
-        if (key.startsWith("sd-")) {
+      for (const key in options.extraHeaders) {
+        if (key.startsWith('sd-')) {
           headers[key] = options.extraHeaders[key];
         } else {
           headers[`sd-${key}`] = options.extraHeaders[key];
@@ -113,12 +136,12 @@ export class ScrapeDo {
       };
     }
 
-    if (method == "GET" && body) {
-      throw new Error("GET method does not support body");
+    if (method === 'GET' && body) {
+      throw new Error('GET method does not support body');
     }
 
     if (options.setCookies) {
-      cookies = "";
+      cookies = '';
       for (const key in options.setCookies) {
         cookies += `${key}=${options.setCookies[key]};`;
       }
@@ -135,12 +158,12 @@ export class ScrapeDo {
       customHeaders: options.customHeaders ? true : undefined,
       setCookies: cookies,
       playWithBrowser: pwbParsed,
-      token: this.token
+      token: this.token,
     };
 
     return this.makeRequest({
       method: method,
-      path: "/",
+      path: '/',
       headers: headers,
       data: body,
       params,
@@ -148,14 +171,24 @@ export class ScrapeDo {
       .then((response: MakeRequestResponse) => {
         // sdoResponseHeaders will return empty if Object.fromEntries fails. For this reason, .get is used when getting header values.
         const sdoHeaders: Partial<DoResponse> = {
-          cookies: response.headers.get("scrape.do-cookies")?.toString(),
-          remainingCredits: response.headers.get("scrape.do-remaining-credits")?.toString(),
-          requestCost: response.headers.get("scrape.do-request-cost")?.toString(),
-          resolvedURL: response.headers.get("scrape.do-resolved-url")?.toString(),
-          targetURL: response.headers.get("scrape.do-target-url")?.toString(),
-          initialStatusCode: response.headers.get("scrape.do-initial-status-code")?.toString(),
-          targetRedirectedLocation: response.headers.get("scrape.do-target-redirected-location")?.toString(),
-          sdoResponseHeaders: response.sdoResponseHeaders
+          cookies: response.headers.get('scrape.do-cookies')?.toString(),
+          remainingCredits: response.headers
+            .get('scrape.do-remaining-credits')
+            ?.toString(),
+          requestCost: response.headers
+            .get('scrape.do-request-cost')
+            ?.toString(),
+          resolvedURL: response.headers
+            .get('scrape.do-resolved-url')
+            ?.toString(),
+          targetURL: response.headers.get('scrape.do-target-url')?.toString(),
+          initialStatusCode: response.headers
+            .get('scrape.do-initial-status-code')
+            ?.toString(),
+          targetRedirectedLocation: response.headers
+            .get('scrape.do-target-redirected-location')
+            ?.toString(),
+          sdoResponseHeaders: response.sdoResponseHeaders,
         };
 
         if (options.returnJSON) {
@@ -165,13 +198,13 @@ export class ScrapeDo {
             ...response.data,
             ...sdoHeaders,
           };
-        } else if (response.data["Message"]) {
+        } else if (response.data['Message']) {
           return {
             url: options.url,
             statusCode: response.status,
-            message: response.data["Message"],
-            possibleCauses: response.data["PossibleCauses"],
-            contact: response.data["Contact"],
+            message: response.data['Message'],
+            possibleCauses: response.data['PossibleCauses'],
+            contact: response.data['Contact'],
           };
         } else {
           return {
@@ -183,13 +216,13 @@ export class ScrapeDo {
         }
       })
       .catch((error: MakeRequestResponse) => {
-        if (error.data && error.data["Message"]) {
+        if (error.data && error.data['Message']) {
           return {
-            url: error.data["URL"],
-            statusCode: error.data["StatusCode"],
-            message: error.data["Message"],
-            possibleCauses: error.data["PossibleCauses"],
-            contact: error.data["Contact"],
+            url: error.data['URL'],
+            statusCode: error.data['StatusCode'],
+            message: error.data['Message'],
+            possibleCauses: error.data['PossibleCauses'],
+            contact: error.data['Contact'],
           };
         } else {
           throw error;
@@ -204,7 +237,9 @@ export class ScrapeDo {
    * @see https://scrape.do/documentation/#usage-statistics-api
    */
   async statistics() {
-    return this.makeRequest({ path: "/info", params: { token: this.token } })
-      .then((response): StatisticsResponse => response.data);
+    return this.makeRequest({
+      path: '/info',
+      params: { token: this.token },
+    }).then((response): StatisticsResponse => response.data);
   }
 }

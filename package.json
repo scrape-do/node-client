@@ -22,6 +22,7 @@
     "url": "git+ssh://git@github.com/scrape-do/node-client.git"
   },
   "scripts": {
+    "check": "biome check --fix",
     "dev": "npx ts-node src/lib.ts",
     "build": "tsc",
     "test": "jest",
@@ -30,6 +31,7 @@
   "author": "Scrape.do <hello@scrape.do>",
   "license": "MIT",
   "devDependencies": {
+    "@biomejs/biome": "^2.4.10",
     "@jest/globals": "^30.3.0",
     "@types/node": "^25.5.2",
     "jest": "^30.3.0",

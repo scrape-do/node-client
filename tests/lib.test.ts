@@ -77,7 +77,7 @@ describe("Usability tests", () => {
     });
 
     expect(response.statusCode).toBe(200);
-    expect(response.content.headers["Cookie"]).toStrictEqual(["A123=Cookie"]);
+    expect(response.content.headers["Cookie"]).toStrictEqual(["A123=Cookie;"]);
   });
 
   test("Should throw error if setCookies is used with customHeaders", async () => {
